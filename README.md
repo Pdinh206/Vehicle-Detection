@@ -7,13 +7,13 @@
 
 ## 2. Dữ liệu Video Test
 Do giới hạn dung lượng GitHub, các video test được lưu trữ ngoài:
+- Thư mục test ảnh trên github: test model trên ảnh.
 - Thư mục test video: https://drive.google.com/drive/u/0/folders/1jXRbfL7takDqWV_jUsSjmmFXj998NloE
 Bao gồm các file:
 - vh.mp4: Video giao thông góc rộng ban ngày.
 - vh1.mp4: Video kiểm tra mật độ xe cao.
 - 220480.mp4
-- Thư mục test trên github: test model trên ảnh.
-*Lưu ý: Tải các file video, di chuyển các video từ thư mục test vừa tải vào cùng 1 thư mục với các model trên rồi chạy.*
+*Lưu ý: Tải các file video, di chuyển các video trong thư mục test_video vừa tải vào cùng 1 thư mục với các model trên rồi chạy.*
 
 ## 3. Cách chạy:
 # Tracking bằng model yolo11n mặc định với các class là phương tiện giao thông
