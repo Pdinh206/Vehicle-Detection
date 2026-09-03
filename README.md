@@ -1,3 +1,4 @@
+<img width="215" height="452" alt="Screenshot 2026-09-03 163515" src="https://github.com/user-attachments/assets/086b6251-c4a5-489d-b808-9c956052de80" />
 ﻿# Vehicle Tracking Project
 
 ## 1. Models
