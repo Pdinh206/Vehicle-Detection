@@ -12,22 +12,21 @@ Bao gồm các file:
 - vh.mp4: Video giao thông góc rộng ban ngày.
 - vh1.mp4: Video kiểm tra mật độ xe cao.
 - 220480.mp4
-
-- Thư mục test trên github: test model trên ảnh. (đã có sẵn), di chuyển các file ảnh ra cùng thư mục với model để chạy.
-
+- Thư mục test trên github: test model trên ảnh.
 *Lưu ý: Tải các file video, di chuyển các video từ thư mục test vừa tải vào cùng 1 thư mục với các model trên rồi chạy.*
 
 ## 3. Cách chạy:
--model rbl
-
+# Tracking bằng model yolo11n mặc định với các class là phương tiện giao thông
+yolo track model=yolo11n.pt source=vh.mp4 classes=[2,3,5,7] show=True
+yolo detect predict model=bestrbl.pt source=test/6.jpg show=True
+# Tracking bằng model rbl
 yolo track model=bestrbl.pt source=vh1.mp4 show=True 
-Hoặc
-python yolo_detect.py --model bestrbl.pt --source 6.png
--model ultr
+# Hoặc có thể chạy code python
+python yolo_detect.py --model bestrbl.pt --source test/6.png
+
+# Tracking bằng model ultr
 python yolo_detect.py --model bestultraly.pt --source vh.mp4  
-Hoặc
+# Hoặc
 python yolo_detect.py --model bestultraly.pt --source vh.mp4
 
--model yolo11n mặc định với các class là phương tiện giao thông
 
-yolo track model=yolo11n.pt source=vh.mp4 classes=[2,3,5,7] show=True
