@@ -18,6 +18,7 @@ Bao gồm các file:
 ## 3. Cách chạy:
 # Tracking bằng model yolo11n mặc định với các class là phương tiện giao thông
 yolo track model=yolo11n.pt source=vh.mp4 classes=[2,3,5,7] show=True
+# Predict ảnh
 yolo detect predict model=bestrbl.pt source=test/6.jpg show=True
 # Tracking bằng model rbl
 yolo track model=bestrbl.pt source=vh1.mp4 show=True 
