@@ -7,13 +7,20 @@
 
 ## 2. Dữ liệu Video Test
 Do giới hạn dung lượng GitHub, các video test được lưu trữ ngoài:
+- Thư mục test video: https://drive.google.com/drive/u/0/folders/1jXRbfL7takDqWV_jUsSjmmFXj998NloE
+Bao gồm các file:
 - vh.mp4: Video giao thông góc rộng ban ngày.
 - vh1.mp4: Video kiểm tra mật độ xe cao.
 - 220480.mp4
-- thư mục test: test model trên ảnh. (đã có sẵn)
+
+- Thư mục test trên github: test model trên ảnh. (đã có sẵn), di chuyển các file ảnh ra cùng thư mục với model để chạy.
+-
 *Lưu ý: Tải các file video, di chuyển các video từ thư mục test vừa tải vào cùng 1 thư mục với các model trên rồi chạy.*
 
 ## 3. Cách chạy:
-python yolo_detect.py --model bestrbl.pt --source vh.mp4
+-model rbl
+python yolo_detect.py --model bestrbl.pt --source vh.mp4  
+-model ultr
 python yolo_detect.py --model bestultraly.pt --source vh.mp4
-python yolo_detect.py --model yolo11n.pt --source vh.mp4
+-model yolo11n mặc định với các class là phương tiện giao thông
+yolo track model=yolo11n.pt source=vh.mp4 classes=[2,3,5,7] show=True
