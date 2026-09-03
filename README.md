@@ -20,12 +20,10 @@ Bao gồm các file:
 ## 3. Cách chạy:
 -model rbl
 
-yolo track model=bestrbl.pt source=vh1.mp4 show=True
-Hoặc 
-python yolo_detect.py --model bestrbl.pt --source 6.png  
-
+yolo track model=bestrbl.pt source=vh1.mp4 show=True 
+Hoặc
+python yolo_detect.py --model bestrbl.pt --source 6.png
 -model ultr
-
 python yolo_detect.py --model bestultraly.pt --source vh.mp4  
 Hoặc
 python yolo_detect.py --model bestultraly.pt --source vh.mp4
