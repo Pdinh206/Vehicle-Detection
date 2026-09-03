@@ -14,7 +14,7 @@ Bao gồm các file:
 - 220480.mp4
 
 - Thư mục test trên github: test model trên ảnh. (đã có sẵn), di chuyển các file ảnh ra cùng thư mục với model để chạy.
--
+
 *Lưu ý: Tải các file video, di chuyển các video từ thư mục test vừa tải vào cùng 1 thư mục với các model trên rồi chạy.*
 
 ## 3. Cách chạy:
