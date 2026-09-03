@@ -19,8 +19,17 @@ Bao gồm các file:
 
 ## 3. Cách chạy:
 -model rbl
-python yolo_detect.py --model bestrbl.pt --source vh.mp4  
+
+yolo track model=bestrbl.pt source=vh1.mp4 show=True
+Hoặc 
+python yolo_detect.py --model bestrbl.pt --source 6.png  
+
 -model ultr
+
+python yolo_detect.py --model bestultraly.pt --source vh.mp4  
+Hoặc
 python yolo_detect.py --model bestultraly.pt --source vh.mp4
+
 -model yolo11n mặc định với các class là phương tiện giao thông
+
 yolo track model=yolo11n.pt source=vh.mp4 classes=[2,3,5,7] show=True
