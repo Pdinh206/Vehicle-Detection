@@ -1,0 +1,14 @@
+﻿# Bỏ qua các thư mục nặng
+runs/
+datasets/
+train/
+__pycache__/
+
+# Bỏ qua toàn bộ video mp4
+*.mp4
+
+# Bỏ qua tất cả file .pt, NGOẠI TRỪ 3 file này
+*.pt
+!bestultraly.pt
+!bestrbl.pt
+!yolo11n.pt

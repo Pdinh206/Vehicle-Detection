@@ -1,0 +1,13 @@
+train: ../train/images
+val: ../valid/images
+test: ../test/images
+
+nc: 4
+names: ['car', 'motorbike', 'truck', 'bus']
+
+roboflow:
+  workspace: phuc-dinhcubing2006-hcmut-edu-vn
+  project: test-gt6op
+  version: 1
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/phuc-dinhcubing2006-hcmut-edu-vn/test-gt6op/dataset/1
