@@ -22,7 +22,7 @@ Bao gồm các file:
 yolo track model=yolo11n.pt source=vh.mp4 classes=[2,3,5,7] show=True
 # Predict ảnh
 yolo detect predict model=bestrbl.pt source=test/6.jpg show=True
-# Tracking bằng model rbl
+<!-- # Tracking bằng model rbl
 yolo track model=bestrbl.pt source=vh1.mp4 show=True 
 # Hoặc có thể chạy code python
 python yolo_detect.py --model bestrbl.pt --source test/6.png
@@ -31,5 +31,6 @@ python yolo_detect.py --model bestrbl.pt --source test/6.png
 yolo track model=bestultraly.pt source=vh1.mp4 show=True 
 # Hoặc
 python yolo_detect.py --model bestultraly.pt --source vh.mp4
+-->
 
 
