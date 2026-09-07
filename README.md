@@ -28,7 +28,7 @@ yolo track model=bestrbl.pt source=vh1.mp4 show=True
 python yolo_detect.py --model bestrbl.pt --source test/6.png
 
 # Tracking bằng model ultr
-python yolo_detect.py --model bestultraly.pt --source vh.mp4  
+yolo track model=bestultraly.pt source=vh1.mp4 show=True 
 # Hoặc
 python yolo_detect.py --model bestultraly.pt --source vh.mp4
 
