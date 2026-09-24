@@ -3,9 +3,6 @@
 
 ## 1. Models
 - yolo11n.pt: Mô hình gốc của yolo từ tập coco
-- bestrbl.pt: Mô hình train từ dữ liệu của Roboflow kết hợp với train từ video thực tế. 
-- bestultraly.pt: Mô hình train từ dữ liệu của ultralytic.
-
 ## 2. Dữ liệu Video Test
 Do giới hạn dung lượng GitHub, các video test được lưu trữ ngoài:
 - Thư mục test ảnh trên github: test model trên ảnh.
