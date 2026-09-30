@@ -148,7 +148,7 @@ from ultralytics import YOLO
 
 
 # COCO class IDs: car=2, motorcycle=3, bus=5, truck=7.
-MODEL_PATH = "best.pt"
+MODEL_PATH = "bestseg.pt"
 CLASSES = [2, 3, 5, 7]
 
 # Lower conf lets ByteTrack use detections in its low-score association stage.
