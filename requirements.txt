@@ -1,0 +1,6 @@
+numpy==2.5.3
+opencv_python==5.0.0.93
+PyYAML==6.0.1
+PyYAML==6.0.3
+ultralytics==8.4.129
+ultralytics==8.4.132
