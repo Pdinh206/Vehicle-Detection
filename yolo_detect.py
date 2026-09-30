@@ -3,7 +3,7 @@ import sys
 import cv2
 import numpy as np
 from ultralytics import YOLO
-
+import yaml
 
 # ==============================================================================
 # 1. CÁC HÀM THUẬT TOÁN ORTHOGONAL CONVEX HULL 
@@ -138,71 +138,187 @@ def findOrthogonalConvexHull(points):
 # ==============================================================================
 # 3. PIPELINE XỬ LÝ VÀ LƯU VIDEO
 # ==============================================================================
+import os
+from pathlib import Path
 
-# Bảng màu chuẩn theo 4 ID của COCO (BGR):
-COLOR_MAP = {
-    2: (255, 255, 0),      # 2: car        -> Xanh lơ
-    3: (255, 255, 255),    # 3: motorcycle -> Trắng
-    5: (0, 0, 255),        # 5: bus        -> Đỏ
-    7: (0, 255, 255),      # 7: truck      -> Vàng
+import cv2
+import numpy as np
+import yaml
+from ultralytics import YOLO
+
+
+# COCO class IDs: car=2, motorcycle=3, bus=5, truck=7.
+MODEL_PATH = "best.pt"
+CLASSES = [2, 3, 5, 7]
+
+# Lower conf lets ByteTrack use detections in its low-score association stage.
+CONF = 0.05
+IMGSZ = 960
+MAX_DET = 300
+DEVICE = "cpu"  # Change to 0 to use the first CUDA GPU.
+
+# False draws the segmentation boundary, which follows the vehicle shape more
+# closely. True draws its convex hull, which fills concave parts of the shape.
+DRAW_CONVEX_HULL = False
+
+TRACKER_PATH = "my_bytetrack.yaml"
+TRACKER_CONFIG = {
+    "tracker_type": "bytetrack",
+    "track_high_thresh": 0.20,
+    "track_low_thresh": 0.05,
+    "new_track_thresh": 0.20,
+    "track_buffer": 30,
+    "match_thresh": 0.80,
+    "fuse_score": True,
 }
 
-model = YOLO("yolo11n.pt")
+# OpenCV colors are BGR.
+COLOR_MAP = {
+    2: (255, 255, 0),    # car: cyan
+    3: (255, 255, 255),  # motorcycle: white
+    5: (0, 0, 255),      # bus: red
+    7: (0, 255, 255),    # truck: yellow
+}
 
-video_name = input("Nhập tên file video (vd: test.mp4): ").strip()
-cap = cv2.VideoCapture(video_name)
-width  = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-fps    = cap.get(cv2.CAP_PROP_FPS) or 25.0
-cap.release()
 
-output_name = f"output_{os.path.basename(video_name)}"
-writer = cv2.VideoWriter(output_name, cv2.VideoWriter_fourcc(*"mp4v"), fps, (width, height))
+def main():
+    video_name = input("Nhập tên file video (vd: test.mp4): ").strip().strip('"')
+    if not video_name:
+        raise ValueError("Bạn chưa nhập tên file video.")
 
-print(f"Đang xử lý '{video_name}' (Bấm 'q' để dừng)...")
+    video_path = Path(video_name)
+    cap = cv2.VideoCapture(str(video_path))
+    if not cap.isOpened():
+        raise FileNotFoundError(f"Không mở được video: {video_name}")
 
-try:
-    # Lọc 4 lớp xe: 2 (car), 3 (motorcycle), 5 (bus), 7 (truck)
-    for result in model.track(source=video_name, classes=[2, 3, 5, 7], conf=0.2, persist=True, stream=True):
-        frame = result.orig_img.copy()
+    width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+    height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    fps = cap.get(cv2.CAP_PROP_FPS)
+    cap.release()
 
-        if result.boxes is not None:
-            for b in result.boxes:
-                # Lấy thông tin xe từ YOLO
-                x1, y1, x2, y2 = map(int, b.xyxy[0])
-                cls_id = int(b.cls[0])
-                color = COLOR_MAP.get(cls_id, (0, 255, 255))
-                label = f"{model.names[cls_id]} {float(b.conf[0]):.2f}"
+    if width <= 0 or height <= 0:
+        raise ValueError(f"Không đọc được kích thước video: {video_name}")
+    if not fps or not np.isfinite(fps):
+        fps = 25.0
 
-                # BƯỚC 1: Cắt vùng xe (ROI) và trích xuất điểm cạnh bằng Canny
-                roi = frame[y1:y2, x1:x2]
-                if roi.size == 0:
-                    continue
-                
-                gray = cv2.cvtColor(roi, cv2.COLOR_BGR2GRAY)
-                edges = cv2.Canny(gray, 50, 150)
-                y_idx, x_idx = np.where(edges > 0)
+    output_name = f"output_{video_path.name}"
+    writer = cv2.VideoWriter(
+        output_name,
+        cv2.VideoWriter_fourcc(*"mp4v"),
+        fps,
+        (width, height),
+    )
+    if not writer.isOpened():
+        raise RuntimeError(f"Không tạo được video đầu ra: {output_name}")
 
-                # BƯỚC 2: Lấy mẫu điểm (nhảy bước 10 để thuật toán chạy nhanh)
-                pts = [[int(x + x1), int(y + y1)] for x, y in zip(x_idx[::10], y_idx[::10])]
+    frame_idx = 0
+    try:
+        with open(TRACKER_PATH, "w", encoding="utf-8") as tracker_file:
+            yaml.safe_dump(TRACKER_CONFIG, tracker_file, sort_keys=False)
 
-                # BƯỚC 3: Tính và vẽ Bao lồi trực giao (Orthogonal Convex Hull)
-                if len(pts) >= 4:
-                    hull = findOrthogonalConvexHull(pts)
-                    poly = np.array(hull, dtype=np.int32).reshape((-1, 1, 2))
-                    cv2.polylines(frame, [poly], isClosed=True, color=color, thickness=2)
+        model = YOLO(MODEL_PATH)
+        print(f"Đang xử lý '{video_name}' (bấm 'q' để dừng)...")
 
-                    # BƯỚC 4: Ghi nhãn phía trên đỉnh cao nhất của đa giác
-                    min_y = min(p[1] for p in hull)
-                    cv2.putText(frame, label, (x1, max(15, min_y - 5)),
-                                cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 1)
+        results = model.track(
+            source=str(video_path),
+            classes=CLASSES,
+            conf=CONF,
+            imgsz=IMGSZ,
+            max_det=MAX_DET,
+            persist=True,
+            stream=True,
+            tracker=TRACKER_PATH,
+            verbose=False,
+            device=DEVICE,
+        )
 
-        writer.write(frame)
-        cv2.imshow("Tracking & Hull", frame)
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
+        for result in results:
+            frame = result.orig_img.copy()
+            counts = {class_id: 0 for class_id in CLASSES}
+            boxes = result.boxes
+            polygons = result.masks.xy if result.masks is not None else []
 
-finally:
-    writer.release()
-    cv2.destroyAllWindows()
-    print(f"Xong! Video đã lưu tại: {output_name}")
+            if boxes is not None:
+                for i, box in enumerate(boxes):
+                    class_id = int(box.cls[0].item())
+                    counts[class_id] = counts.get(class_id, 0) + 1
+                    color = COLOR_MAP.get(class_id, (0, 255, 255))
+                    confidence = float(box.conf[0].item())
+
+                    track_id = None
+                    if box.id is not None:
+                        track_id = int(box.id[0].item())
+
+                    class_name = model.names[class_id]
+                    label = f"{class_name} {confidence:.2f}"
+                    if track_id is not None:
+                        label = f"#{track_id} {label}"
+
+                    top_y = int(box.xyxy[0][1].item())
+                    if i < len(polygons):
+                        polygon = np.asarray(polygons[i], dtype=np.int32)
+                        if len(polygon) >= 3:
+                            if DRAW_CONVEX_HULL:
+                                polygon = cv2.convexHull(
+                                    polygon.reshape(-1, 1, 2)
+                                ).reshape(-1, 2)
+                            cv2.polylines(
+                                frame,
+                                [polygon.reshape(-1, 1, 2)],
+                                isClosed=True,
+                                color=color,
+                                thickness=2,
+                            )
+                            top_y = int(polygon[:, 1].min())
+                        else:
+                            x1, y1, x2, y2 = map(
+                                int, box.xyxy[0].tolist()
+                            )
+                            cv2.rectangle(frame, (x1, y1), (x2, y2), color, 2)
+                    else:
+                        x1, y1, x2, y2 = map(int, box.xyxy[0].tolist())
+                        cv2.rectangle(frame, (x1, y1), (x2, y2), color, 2)
+
+                    x1 = max(0, int(box.xyxy[0][0].item()))
+                    cv2.putText(
+                        frame,
+                        label,
+                        (x1, max(15, top_y - 5)),
+                        cv2.FONT_HERSHEY_SIMPLEX,
+                        0.5,
+                        color,
+                        1,
+                        cv2.LINE_AA,
+                    )
+
+            summary = (
+                f"car:{counts.get(2, 0)}  moto:{counts.get(3, 0)}  "
+                f"bus:{counts.get(5, 0)}  truck:{counts.get(7, 0)}"
+            )
+            cv2.putText(
+                frame,
+                summary,
+                (10, 28),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                0.7,
+                (0, 255, 0),
+                2,
+                cv2.LINE_AA,
+            )
+
+            if frame_idx % 30 == 0:
+                print(f"frame {frame_idx}: {summary}")
+            frame_idx += 1
+
+            writer.write(frame)
+            cv2.imshow("Vehicle Segmentation Tracking", frame)
+            if cv2.waitKey(1) & 0xFF == ord("q"):
+                break
+    finally:
+        writer.release()
+        cv2.destroyAllWindows()
+        print(f"Xong! Video đã lưu tại: {os.path.abspath(output_name)}")
+
+
+if __name__ == "__main__":
+    main()
