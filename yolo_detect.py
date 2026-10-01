@@ -3,7 +3,6 @@ from pathlib import Path
 
 import cv2
 import numpy as np
-import torch
 from ultralytics import YOLO
 import yaml
 
@@ -151,8 +150,6 @@ CONF = 0.05
 IMGSZ = 960
 MAX_DET = 300
 
-# Tự động chọn GPU nếu máy có CUDA, ngược lại dùng CPU
-DEVICE = 0 if torch.cuda.is_available() else "cpu"
 
 # Draw the orthogonal convex hull computed from each YOLO segmentation mask.
 DRAW_ORTHOGONAL_HULL = True
@@ -217,8 +214,6 @@ def main():
             yaml.safe_dump(TRACKER_CONFIG, tracker_file, sort_keys=False)
 
         model = YOLO(MODEL_PATH)
-        device_name = f"GPU (CUDA: {torch.cuda.get_device_name(0)})" if DEVICE == 0 else "CPU"
-        print(f"Thiết bị sử dụng: {device_name}")
         print(f"Đang xử lý '{video_name}' (bấm 'q' để dừng)...")
         cv2.namedWindow("Vehicle Segmentation Tracking", cv2.WINDOW_NORMAL)
         cv2.resizeWindow("Vehicle Segmentation Tracking", 1280, 720)
@@ -232,7 +227,6 @@ def main():
             stream=True,
             tracker=TRACKER_PATH,
             verbose=False,
-            device=DEVICE,
         )
 
         for result in results:
