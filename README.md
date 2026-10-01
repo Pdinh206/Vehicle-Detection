@@ -6,8 +6,6 @@ Dự án nhận diện, phân vùng (segmentation) và theo dõi phương tiện
 
 ## 1. Yêu cầu hệ thống
 - Đã cài đặt **Python** (khuyến nghị Python 3.10 - 3.12 hoặc Anaconda).
-- Khi cài Python trên Windows, nhớ tích chọn: **"Add python.exe to PATH"**.
-
 ---
 
 ## 2. Hướng dẫn chạy nhanh (cho Windows/Mac/Linux)
