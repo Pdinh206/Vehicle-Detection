@@ -1,9 +1,12 @@
 import os
-import sys
+from pathlib import Path
+
 import cv2
 import numpy as np
+import torch
 from ultralytics import YOLO
 import yaml
+
 
 # ==============================================================================
 # 1. CÁC HÀM THUẬT TOÁN ORTHOGONAL CONVEX HULL 
@@ -136,16 +139,8 @@ def findOrthogonalConvexHull(points):
     arranged_points.append(arranged_points[0])
     return arranged_points
 # ==============================================================================
-# 3. PIPELINE XỬ LÝ VÀ LƯU VIDEO
+# 2. CẤU HÌNH MODEL VÀ TRACKER
 # ==============================================================================
-import os
-from pathlib import Path
-
-import cv2
-import numpy as np
-import yaml
-from ultralytics import YOLO
-
 
 # COCO class IDs: car=2, motorcycle=3, bus=5, truck=7.
 MODEL_PATH = "bestseg.pt"
@@ -155,7 +150,9 @@ CLASSES = [2, 3, 5, 7]
 CONF = 0.05
 IMGSZ = 960
 MAX_DET = 300
-DEVICE = "0"  # Change to 0 to use the first CUDA GPU.
+
+# Tự động chọn GPU nếu máy có CUDA, ngược lại dùng CPU
+DEVICE = 0 if torch.cuda.is_available() else "cpu"
 
 # Draw the orthogonal convex hull computed from each YOLO segmentation mask.
 DRAW_ORTHOGONAL_HULL = True
@@ -179,6 +176,10 @@ COLOR_MAP = {
     7: (0, 255, 255),    # truck: yellow
 }
 
+
+# ==============================================================================
+# 3. PIPELINE XỬ LÝ VÀ LƯU VIDEO
+# ==============================================================================
 
 def main():
     video_name = input("Nhập tên file video (vd: test.mp4): ").strip().strip('"')
@@ -216,6 +217,8 @@ def main():
             yaml.safe_dump(TRACKER_CONFIG, tracker_file, sort_keys=False)
 
         model = YOLO(MODEL_PATH)
+        device_name = f"GPU (CUDA: {torch.cuda.get_device_name(0)})" if DEVICE == 0 else "CPU"
+        print(f"Thiết bị sử dụng: {device_name}")
         print(f"Đang xử lý '{video_name}' (bấm 'q' để dừng)...")
         cv2.namedWindow("Vehicle Segmentation Tracking", cv2.WINDOW_NORMAL)
         cv2.resizeWindow("Vehicle Segmentation Tracking", 1280, 720)
