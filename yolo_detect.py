@@ -157,9 +157,8 @@ IMGSZ = 960
 MAX_DET = 300
 DEVICE = "cpu"  # Change to 0 to use the first CUDA GPU.
 
-# False draws the segmentation boundary, which follows the vehicle shape more
-# closely. True draws its convex hull, which fills concave parts of the shape.
-DRAW_CONVEX_HULL = False
+# Draw the orthogonal convex hull computed from each YOLO segmentation mask.
+DRAW_ORTHOGONAL_HULL = True
 
 TRACKER_PATH = "my_bytetrack.yaml"
 TRACKER_CONFIG = {
@@ -218,7 +217,8 @@ def main():
 
         model = YOLO(MODEL_PATH)
         print(f"Đang xử lý '{video_name}' (bấm 'q' để dừng)...")
-
+        cv2.namedWindow("Vehicle Segmentation Tracking", cv2.WINDOW_NORMAL)
+        cv2.resizeWindow("Vehicle Segmentation Tracking", 1280, 720)
         results = model.track(
             source=str(video_path),
             classes=CLASSES,
@@ -258,10 +258,11 @@ def main():
                     if i < len(polygons):
                         polygon = np.asarray(polygons[i], dtype=np.int32)
                         if len(polygon) >= 3:
-                            if DRAW_CONVEX_HULL:
-                                polygon = cv2.convexHull(
-                                    polygon.reshape(-1, 1, 2)
-                                ).reshape(-1, 2)
+                            if DRAW_ORTHOGONAL_HULL and len(polygon) >= 4:
+                                points = list(map(tuple, polygon.tolist()))
+                                hull = findOrthogonalConvexHull(points)
+                                if len(hull) >= 4:
+                                    polygon = np.asarray(hull, dtype=np.int32)
                             cv2.polylines(
                                 frame,
                                 [polygon.reshape(-1, 1, 2)],
