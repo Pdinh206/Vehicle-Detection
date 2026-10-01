@@ -37,7 +37,7 @@ python -m venv venv
 .\venv\Scripts\activate
 
 # Bước 3: Cài đặt các thư viện cần thiết
-pip install --upgrade pip
+python -m pip install --upgrade pip
 pip install -r requirements.txt
 
 # Bước 4: Chạy chương trình
