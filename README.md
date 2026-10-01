@@ -35,7 +35,8 @@ python -m venv venv
 # Bước 2: Kích hoạt môi trường ảo
 # Trên Windows (CMD hoặc PowerShell):
 .\venv\Scripts\activate
-
+# Vào thư mục vehicle_detection
+cd Vehicle-Detection
 # Bước 3: Cài đặt các thư viện cần thiết
 python -m pip install --upgrade pip
 pip install -r requirements.txt
