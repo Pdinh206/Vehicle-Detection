@@ -29,14 +29,15 @@ Người dùng sau khi tải hoặc clone source code về chỉ cần:
 Nếu bạn muốn tự thao tác từng bước bằng dòng lệnh:
 
 ```bash
+# Bước 0: Clone project
+git clone https://github.com/Pdinh206/Vehicle-Detection.git; cd Vehicle-Detection
 # Bước 1: Tạo môi trường ảo venv
 python -m venv venv
 
 # Bước 2: Kích hoạt môi trường ảo
 # Trên Windows (CMD hoặc PowerShell):
 .\venv\Scripts\activate
-# Vào thư mục vehicle_detection
-cd Vehicle-Detection
+
 # Bước 3: Cài đặt các thư viện cần thiết
 python -m pip install --upgrade pip
 pip install -r requirements.txt
