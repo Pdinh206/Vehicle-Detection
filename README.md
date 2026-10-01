@@ -10,7 +10,7 @@ Dự án nhận diện, phân vùng (segmentation) và theo dõi phương tiện
 
 ---
 
-## 2. Hướng dẫn chạy nhanh (cho Windows)
+## 2. Hướng dẫn chạy nhanh (cho Windows/Mac/Linux)
 
 Người dùng sau khi tải hoặc clone source code về chỉ cần:
 
