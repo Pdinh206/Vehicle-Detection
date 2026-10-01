@@ -155,7 +155,7 @@ CLASSES = [2, 3, 5, 7]
 CONF = 0.05
 IMGSZ = 960
 MAX_DET = 300
-DEVICE = "cpu"  # Change to 0 to use the first CUDA GPU.
+DEVICE = "0"  # Change to 0 to use the first CUDA GPU.
 
 # Draw the orthogonal convex hull computed from each YOLO segmentation mask.
 DRAW_ORTHOGONAL_HULL = True
