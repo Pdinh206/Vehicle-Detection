@@ -1,7 +1,5 @@
-numpy==2.5.3
-opencv_python==5.0.0.93
-PyYAML==6.0.1
-PyYAML==6.0.3
-ultralytics==8.4.129
-ultralytics==8.4.132
+numpy>=1.24.0
+opencv-python>=4.8.0
+PyYAML>=6.0.1
+ultralytics>=8.3.0
 lapx>=0.5.2

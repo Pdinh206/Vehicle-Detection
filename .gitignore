@@ -1,14 +1,21 @@
-﻿# Bỏ qua các thư mục nặng
+# Bỏ qua các thư mục nặng
 runs/
 datasets/
 train/
 __pycache__/
 
+# Môi trường ảo (Virtual Environments)
+venv/
+.venv/
+env/
+
 # Bỏ qua toàn bộ video mp4
 *.mp4
 
-# Bỏ qua tất cả file .pt, NGOẠI TRỪ 3 file này
+# Bỏ qua tất cả file .pt, NGOẠI TRỪ các file này
 *.pt
 !bestultraly.pt
 !bestrbl.pt
 !yolo11n.pt
+!bestseg.pt
+!best.pt
