@@ -50,7 +50,4 @@ Khi không dùng nữa, gõ `deactivate` để thoát môi trường ảo.
 
 ## 4. Dữ liệu Video Test & Weights
 - **Model weights**: `bestseg.pt`, `yolo11n.pt`
-- **Video test**: Do giới hạn dung lượng GitHub, các video test được lưu trữ ngoài:
-  - Thư mục Google Drive: [Tải video tại đây](https://drive.google.com/drive/u/0/folders/1jXRbfL7takDqWV_jUsSjmmFXj998NloE)
-  - Bao gồm: `vh.mp4`, `vh1.mp4`, `tht.mp4`
-  - *Lưu ý: Tải các file video và đặt vào cùng thư mục với `yolo_detect.py` trước khi chạy.*
+- **Video test**: `vh.mp4`, `vh1.mp4`, `tht.mp4`
