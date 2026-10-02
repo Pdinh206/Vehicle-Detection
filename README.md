@@ -44,14 +44,27 @@ python -m pip install --upgrade pip
 pip install -r requirements.txt
 
 # Bước 4: Chạy chương trình
+# Cách A: Chạy cửa sổ Desktop (OpenCV)
 python yolo_detect.py
+
+# Cách B: Chạy giao diện Web (vừa chạy vừa xuất màn hình trực tiếp - khuyên dùng cho Colab/Cloud GPU)
+python app.py
 ```
 
 Khi không dùng nữa, gõ `deactivate` để thoát môi trường ảo.
 
 ---
 
-## 4. Tùy chọn thiết bị chạy (GPU hoặc CPU)
+## 4. Giao diện Web Trực Tiếp (Live Stream với Gradio)
+
+Khi chạy `python app.py`:
+- Trình duyệt sẽ tự động mở giao diện điều khiển hiện đại.
+- **Vừa chạy vừa xuất màn hình**: Khung hình video được stream trực tiếp lên web theo thời gian thực cùng bảng thống kê số lượng phương tiện (Ô tô, Xe máy, Xe buýt, Xe tải).
+- **Chạy trên Google Colab / Cloud VM**: Gradio tự động cấp một đường link công khai (`https://xxxx.gradio.live`) có thể chia sẻ cho người khác test trực tiếp trên GPU máy ảo.
+
+---
+
+## 5. Tùy chọn thiết bị chạy (GPU hoặc CPU)
 
 Trong file `yolo_detect.py`, bạn có thể dễ dàng chuyển đổi thiết bị tại dòng cấu hình `DEVICE`:
 
@@ -68,6 +81,6 @@ Trong file `yolo_detect.py`, bạn có thể dễ dàng chuyển đổi thiết 
 
 ---
 
-## 5. Dữ liệu Video Test & Weights
+## 6. Dữ liệu Video Test & Weights
 - **Model weights**: `bestseg.pt`, `yolo11n.pt`
 - **Video test**: `vh.mp4`, `vh1.mp4`, `tht.mp4`
