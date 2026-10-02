@@ -64,20 +64,31 @@ Khi chạy `python app.py`:
 
 ---
 
-## 5. Tùy chọn thiết bị chạy (GPU hoặc CPU)
+## 5. Tùy chọn thiết bị chạy (GPU NVIDIA hoặc CPU)
 
-Trong file `yolo_detect.py`, bạn có thể dễ dàng chuyển đổi thiết bị tại dòng cấu hình `DEVICE`:
+Dự án hiện tại đã **hoàn toàn tự động nhận diện thiết bị** (`DEVICE = 0 if torch.cuda.is_available() else "cpu"`):
+- **Máy có card rời NVIDIA (RTX/GTX)** + đã cài PyTorch CUDA: Tự động kích hoạt GPU 0 để đạt tốc độ xử lý tối đa (FPS cao).
+- **Máy không có card rời (chỉ có CPU / GPU Onboard Intel/AMD)**: Tự động chạy trên CPU mà không hề bị lỗi hay văng chương trình.
 
-- **Chạy bằng GPU (NVIDIA)**:
-  ```python
-  DEVICE = 0
-  ```
-- **Chạy bằng CPU**:
-  ```python
-  DEVICE = "cpu"
-  ```
+### Cách xử lý khi máy có card rời nhưng vẫn báo chạy CPU:
+Hiện tượng này xảy ra khi môi trường Python đang cài nhầm bản **PyTorch CPU** (`torch-x.x.x+cpu`). Để chuyển sang chạy GPU:
+1. Gỡ bản PyTorch CPU cũ:
+   ```bash
+   pip uninstall torch torchvision torchaudio -y
+   ```
+2. Cài bản PyTorch hỗ trợ CUDA (khuyến nghị CUDA 12.4 hoặc 12.8):
+   ```bash
+   # Dành cho CUDA 12.4 (ổn định nhất trên Python 3.10 - 3.12):
+   pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu124
 
-> **Lưu ý**: Hệ thống đã tích hợp cơ chế bảo vệ an toàn. Nếu bạn cấu hình `DEVICE = 0` nhưng máy chưa có GPU phù hợp hoặc driver CUDA gặp lỗi, chương trình sẽ tự động chuyển về chạy trên CPU (`device='cpu'`) để đảm bảo không bị văng hay ngắt chương trình.
+   # Hoặc dành cho CUDA 12.8 / RTX 50 series:
+   pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu128
+   ```
+3. Kiểm tra lại:
+   ```bash
+   python -c "import torch; print('CUDA:', torch.cuda.is_available(), '| GPU:', torch.cuda.get_device_name(0) if torch.cuda.is_available() else 'None')"
+   ```
+   Khi kết quả hiển thị `CUDA: True` và tên card NVIDIA của bạn, dự án sẽ tự động chạy 100% bằng GPU.
 
 ---
 

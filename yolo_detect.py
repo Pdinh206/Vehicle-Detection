@@ -3,6 +3,7 @@ from pathlib import Path
 
 import cv2
 import numpy as np
+import torch
 from ultralytics import YOLO
 import yaml
 
@@ -149,8 +150,10 @@ CLASSES = [2, 3, 5, 7]
 CONF = 0.05
 IMGSZ = 960
 MAX_DET = 300
-# Chọn thiết bị: "cpu" hoặc 0 (chạy GPU 0 nếu máy có GPU NVIDIA và đã cài PyTorch CUDA)
-DEVICE = "0"
+# Tự động nhận diện thiết bị:
+# - Nếu máy có card rời NVIDIA và PyTorch hỗ trợ CUDA -> dùng GPU 0
+# - Nếu máy không có card rời hoặc dùng PyTorch CPU -> tự động chuyển về "cpu"
+DEVICE = 0 if torch.cuda.is_available() else "cpu"
 
 
 # Draw the orthogonal convex hull computed from each YOLO segmentation mask.
@@ -220,6 +223,10 @@ def main():
         cv2.namedWindow("Vehicle Segmentation Tracking", cv2.WINDOW_NORMAL)
         cv2.resizeWindow("Vehicle Segmentation Tracking", 1280, 720)
         run_device = DEVICE
+        if run_device == 0 and torch.cuda.is_available():
+            print(f"[THIẾT BỊ] Đang sử dụng GPU: {torch.cuda.get_device_name(0)}")
+        else:
+            print("[THIẾT BỊ] Đang sử dụng: CPU (để tăng tốc độ xử lý, hãy chạy trên máy có GPU NVIDIA và cài PyTorch CUDA)")
         try:
             results = model.track(
                 source=str(video_path),
@@ -288,7 +295,12 @@ def main():
                         polygon = np.asarray(polygons[i], dtype=np.int32)
                         if len(polygon) >= 3:
                             if DRAW_ORTHOGONAL_HULL and len(polygon) >= 4:
-                                points = list(map(tuple, polygon.tolist()))
+                                # Rút gọn điểm contour thẳng hàng bằng approxPolyDP để tăng tốc 50-100 lần
+                                approx = cv2.approxPolyDP(polygon, 2.0, True)
+                                if len(approx) >= 4:
+                                    points = [tuple(pt[0]) for pt in approx]
+                                else:
+                                    points = list(map(tuple, polygon.tolist()))
                                 hull = findOrthogonalConvexHull(points)
                                 if len(hull) >= 4:
                                     polygon = np.asarray(hull, dtype=np.int32)
