@@ -60,7 +60,7 @@ def process_video_stream(
     conf_thresh=0.05,
     imgsz=960,
     draw_orthogonal_hull=True,
-    device_choice="cpu",
+    device_choice="0",
     progress=gr.Progress(),
 ):
     if not video_path:
