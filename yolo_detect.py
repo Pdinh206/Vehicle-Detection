@@ -149,6 +149,7 @@ CLASSES = [2, 3, 5, 7]
 CONF = 0.05
 IMGSZ = 960
 MAX_DET = 300
+# Chọn thiết bị: "cpu" hoặc 0 (chạy GPU 0 nếu máy có GPU NVIDIA và đã cài PyTorch CUDA)
 DEVICE = "cpu"
 
 
@@ -218,20 +219,49 @@ def main():
         print(f"Đang xử lý '{video_name}' (bấm 'q' để dừng)...")
         cv2.namedWindow("Vehicle Segmentation Tracking", cv2.WINDOW_NORMAL)
         cv2.resizeWindow("Vehicle Segmentation Tracking", 1280, 720)
-        results = model.track(
-            source=str(video_path),
-            classes=CLASSES,
-            conf=CONF,
-            imgsz=IMGSZ,
-            max_det=MAX_DET,
-            device=DEVICE,
-            persist=True,
-            stream=True,
-            tracker=TRACKER_PATH,
-            verbose=False,
-        )
+        run_device = DEVICE
+        try:
+            results = model.track(
+                source=str(video_path),
+                classes=CLASSES,
+                conf=CONF,
+                imgsz=IMGSZ,
+                max_det=MAX_DET,
+                device=run_device,
+                persist=True,
+                stream=True,
+                tracker=TRACKER_PATH,
+                verbose=False,
+            )
+            results_iter = iter(results)
+            first_result = next(results_iter, None)
+        except Exception as e:
+            if str(run_device).lower() != "cpu":
+                print(f"\n[CẢNH BÁO] Không thể chạy với device={run_device}: {e}")
+                print("[THÔNG BÁO] Tự động chuyển sang chạy trên CPU (device='cpu')...\n")
+                run_device = "cpu"
+                results = model.track(
+                    source=str(video_path),
+                    classes=CLASSES,
+                    conf=CONF,
+                    imgsz=IMGSZ,
+                    max_det=MAX_DET,
+                    device="cpu",
+                    persist=True,
+                    stream=True,
+                    tracker=TRACKER_PATH,
+                    verbose=False,
+                )
+                results_iter = iter(results)
+                first_result = next(results_iter, None)
+            else:
+                raise e
 
-        for result in results:
+        if first_result is None:
+            return
+
+        from itertools import chain
+        for result in chain([first_result], results_iter):
             frame = result.orig_img.copy()
             counts = {class_id: 0 for class_id in CLASSES}
             boxes = result.boxes
