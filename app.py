@@ -104,6 +104,7 @@ def process_video_stream(
             imgsz=int(imgsz),
             max_det=300,
             device=actual_device,
+            retina_masks=True,
             persist=True,
             stream=True,
             tracker=TRACKER_PATH,
@@ -121,6 +122,7 @@ def process_video_stream(
             imgsz=int(imgsz),
             max_det=300,
             device="cpu",
+            retina_masks=True,
             persist=True,
             stream=True,
             tracker=TRACKER_PATH,
@@ -167,12 +169,7 @@ def process_video_stream(
                     polygon = np.asarray(polygons[i], dtype=np.int32)
                     if len(polygon) >= 3:
                         if draw_orthogonal_hull and len(polygon) >= 4:
-                            # Rút gọn điểm contour thẳng hàng bằng approxPolyDP để tăng tốc 50-100 lần
-                            approx = cv2.approxPolyDP(polygon, 2.0, True)
-                            if len(approx) >= 4:
-                                points = [tuple(pt[0]) for pt in approx]
-                            else:
-                                points = list(map(tuple, polygon.tolist()))
+                            points = list(map(tuple, polygon.tolist()))
                             hull = findOrthogonalConvexHull(points)
                             if len(hull) >= 4:
                                 polygon = np.asarray(hull, dtype=np.int32)
