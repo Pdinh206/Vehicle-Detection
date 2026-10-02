@@ -149,6 +149,7 @@ CLASSES = [2, 3, 5, 7]
 CONF = 0.05
 IMGSZ = 960
 MAX_DET = 300
+DEVICE = "cpu"
 
 
 # Draw the orthogonal convex hull computed from each YOLO segmentation mask.
@@ -223,6 +224,7 @@ def main():
             conf=CONF,
             imgsz=IMGSZ,
             max_det=MAX_DET,
+            device=DEVICE,
             persist=True,
             stream=True,
             tracker=TRACKER_PATH,
