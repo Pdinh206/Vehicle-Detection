@@ -150,7 +150,7 @@ CONF = 0.05
 IMGSZ = 960
 MAX_DET = 300
 # Chọn thiết bị: "cpu" hoặc 0 (chạy GPU 0 nếu máy có GPU NVIDIA và đã cài PyTorch CUDA)
-DEVICE = "cpu"
+DEVICE = "0"
 
 
 # Draw the orthogonal convex hull computed from each YOLO segmentation mask.
